@@ -133,7 +133,6 @@ class ReportXml(models.Model):
                             reading both times.
         :return: The newly generated attachment if no AccessError, else None.
         '''
-        import ipdb;ipdb.set_trace()
         if self.attachment:
             attachment_name = safe_eval(
                 self.attachment, {'object': object, 'time': time})
@@ -182,7 +181,6 @@ class ReportXml(models.Model):
         jasper = r.execute()
         #if self.attachment_use:
         jasper_content_stream = io.BytesIO(jasper)
-        import ipdb;ipdb.set_trace()
         doc_record = self.env[record['model']].browse(docids)
         self.postprocess_jasper_report(
             report_record, doc_record, jasper_content_stream)

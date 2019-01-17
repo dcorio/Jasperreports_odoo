@@ -27,9 +27,11 @@
 #
 ##############################################################################
 import json
+import time
 
 from odoo.addons.web.controllers import main as report
 from odoo.http import route, request
+from odoo.tools.safe_eval import safe_eval
 
 
 class ReportController(report.ReportController):
@@ -56,6 +58,11 @@ class ReportController(report.ReportController):
             # Get the report output type
             output_type = report_jas.jasper_output
             report_name = str(report_jas.name) + '.' + output_type
+            document = request.env[report_jas.model].sudo().browse(docids)
+            if report_jas.print_report_name and len(docids) == 1:
+                report_name = safe_eval(
+                    report_jas.print_report_name, {
+                        'object': document, 'time': time})
             content_dict = {
                 'pdf': 'application/pdf',
                 'html': 'text/html',

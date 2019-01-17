@@ -45,7 +45,7 @@
         'images/jasper_reports.png'
     ],
     "depends": [
-        "sale", "jasper_load"
+        "sale", "jasper_load", "mail",
     ],
     "category": "Generic Modules/Jasper Reports",
     "demo": [

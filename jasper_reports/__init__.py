@@ -36,6 +36,7 @@ from . import jasper_report
 from . import report_xml
 from . import wizard
 from . import websrv_lib
+from . import mail
 
 try:
     import release
