@@ -123,7 +123,7 @@ class ReportXml(models.Model):
         ], limit=1)
 
     @api.multi
-    def postprocess_jasper_report(self, record, buffer):
+    def postprocess_jasper_report(self, record, object, buffer):
         '''Hook to handle post processing during the jasper report generation.
         The basic behavior consists to create a new attachment containing the
         jasper base64 encoded.
@@ -133,9 +133,10 @@ class ReportXml(models.Model):
                             reading both times.
         :return: The newly generated attachment if no AccessError, else None.
         '''
+        import ipdb;ipdb.set_trace()
         if self.attachment:
             attachment_name = safe_eval(
-                self.attachment, {'object': record, 'time': time})
+                self.attachment, {'object': object, 'time': time})
         else:
             attachment_name = str(self.name) + '.' + self.jasper_output
         attachment_vals = {
@@ -160,13 +161,13 @@ class ReportXml(models.Model):
     @api.model
     def render_jasper(self, docids, data):
         cr, uid, context = self.env.args
-        doc_record = self.jasper_model_id.browse(docids)
-        if self.attachment_use:
-            save_in_attachment = {}
-            attachment_id = self.retrieve_jasper_attachment(doc_record)
-            if attachment_id:
-                save_in_attachment[doc_record.id] = attachment_id
-                return self._post_pdf(save_in_attachment)
+        report_record = self.jasper_model_id.browse(docids)
+        #if self.attachment_use:
+        #    save_in_attachment = {}
+        #    attachment_id = self.retrieve_jasper_attachment(doc_record)
+        #    if attachment_id:
+        #        save_in_attachment[doc_record.id] = attachment_id
+        #        return self._post_pdf(save_in_attachment)
         report_model_name = 'report.%s' % self.report_name
         self.env.cr.execute('SELECT id, model FROM '
                             'ir_act_report_xml WHERE '
@@ -179,10 +180,12 @@ class ReportXml(models.Model):
         data.update({'env': self.env, 'model': record.get('model')})
         r = Report(report_model_name, cr, uid, docids, data, context)
         jasper = r.execute()
-        if self.attachment_use:
-            jasper_content_stream = io.BytesIO(jasper)
-            self.postprocess_jasper_report(
-                doc_record, jasper_content_stream)
+        #if self.attachment_use:
+        jasper_content_stream = io.BytesIO(jasper)
+        import ipdb;ipdb.set_trace()
+        doc_record = self.env[record['model']].browse(docids)
+        self.postprocess_jasper_report(
+            report_record, doc_record, jasper_content_stream)
         return jasper
 
     @api.model
