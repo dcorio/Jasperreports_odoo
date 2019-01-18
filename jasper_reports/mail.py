@@ -85,7 +85,12 @@ class MailTemplate(models.Model):
                     if (report.report_type not in
                             ['qweb-html', 'qweb-pdf', 'jasper']):
                         raise UserError(_('Unsupported report type %s found.') % report.report_type)
-                    result, format = report.render_qweb_pdf([res_id])
+                    if report.report_type == 'jasper':
+                        result = report.render_jasper(
+                            [res_id], data={})
+                        format = report.jasper_output
+                    else:
+                        result, format = report.render_qweb_pdf([res_id])
 
                     # TODO in trunk, change return format to binary to match message_post expected format
                     result = base64.b64encode(result)
