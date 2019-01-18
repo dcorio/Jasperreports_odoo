@@ -146,6 +146,7 @@ class ReportXml(models.Model):
             'res_id': record.id,
         }
         attachment = None
+
         try:
             attachment = self.env['ir.attachment'].create(attachment_vals)
         except AccessError:
@@ -179,11 +180,11 @@ class ReportXml(models.Model):
         data.update({'env': self.env, 'model': record.get('model')})
         r = Report(report_model_name, cr, uid, docids, data, context)
         jasper = r.execute()
-        #if self.attachment_use:
-        jasper_content_stream = io.BytesIO(jasper)
-        doc_record = self.env[record['model']].browse(docids)
-        self.postprocess_jasper_report(
-            report_record, doc_record, jasper_content_stream)
+        if self.attachment_use:
+            jasper_content_stream = io.BytesIO(jasper)
+            doc_record = self.env[record['model']].browse(docids)
+            self.postprocess_jasper_report(
+                report_record, doc_record, jasper_content_stream)
         return jasper
 
     @api.model
