@@ -84,7 +84,7 @@ odoo.service.server.PreforkServer.__init__ = prefork_server_init
 
 def gevent_server_start(self):
     import gevent
-    from gevent.wsgi import WSGIServer
+    from gevent.pywsgi import WSGIServer
 
     if os.name == 'posix':
         signal.signal(signal.SIGQUIT, dumpstacks)
